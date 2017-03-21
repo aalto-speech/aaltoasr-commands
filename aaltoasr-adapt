@@ -1,0 +1,65 @@
+#! /usr/bin/env python
+# -*- mode: Python; -*-
+
+import argparse
+
+import aaltoasr
+
+parser = argparse.ArgumentParser(
+    description='Learn an acoustic model adaptation.',
+    usage='%(prog)s [options] -o output [-t transcript [-t transcript ...]] input [input ...] [-a ...]',
+    epilog=('For more details, see the User\'s Guide at: '
+            'http://research.spa.aalto.fi/speech/aaltoasr-guide/'))
+
+parser.add_argument('input', help='input audio file', nargs='+')
+parser.add_argument('-o', '--output',
+                    help='output adaptation file',
+                    metavar='file',
+                    required=True)
+parser.add_argument('-p', '--prev',
+                    help='previous adaptation configuration',
+                    metavar='file')
+parser.add_argument('-m', '--model',
+                    help='perform model-based regression tree adaptation',
+                    action='store_true')
+parser.add_argument('-t', '--trans',
+                    help='input transcript for supervised adaptation',
+                    metavar='file',
+                    action='append')
+parser.add_argument('-v', '--verbose',
+                    help='print output also from invoked commands',
+                    action='store_true')
+parser.add_argument('-a', '--args',
+                    help='pass arguments after -a to aaltoasr-rec/align',
+                    metavar='A',
+                    nargs=argparse.REMAINDER)
+
+args = parser.parse_args()
+
+if args.trans:
+    if len(args.trans) != len(args.input):
+        parser.error('number of transcripts ({0}) must match number of inputs ({1})'.format(
+                len(args.trans), len(args.input)))
+    tool = 'align'
+    tool_args = [a for t in args.trans for a in ('-t', t)]
+    tool_args.extend(args.input)
+else:
+    tool = 'rec'
+    tool_args = ['-m', 'segphone']
+    tool_args.extend(args.input)
+
+if args.verbose:
+    tool_args.append('-v')
+if args.prev:
+    tool_args.extend(('-a', args.prev))
+if args.args is not None:
+    tool_args.extend(args.args)
+
+with aaltoasr.AaltoASR(tool, args=tool_args) as asr:
+    if tool == 'align':
+        asr.align()
+    else:
+        asr.phone_probs()
+        asr.rec()
+
+    asr.adapt(args.output, args.model)

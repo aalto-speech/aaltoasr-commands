@@ -1,0 +1,10 @@
+#! /usr/bin/env python
+# -*- mode: Python; -*-
+import aaltoasr
+import sys
+
+sys.stderr.write("Starting aaltoasr script\n")
+with aaltoasr.AaltoASR('rec') as asr:
+    asr.phone_probs()
+    asr.rec()
+    asr.gen_output()
