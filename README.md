@@ -1,5 +1,7 @@
 # aaltoasr-commands
-Easy to use command line tools for the AaltoASR system.
+Easy to use command line tools for the AaltoASR system
+==================================
+
 Dependencies:
 AaltoASR, pre-trained acoustic and language models
 sox
