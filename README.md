@@ -4,11 +4,11 @@ Easy to use command line tools for the AaltoASR system
 
 Dependencies
 -------------------------
--AaltoASR
--pre-trained acoustic and language models
--sox
--lavennin
--python2.7
+- AaltoASR
+- pre-trained acoustic and language models
+- sox
+- lavennin
+- python2.7
 
 
 Recognition
